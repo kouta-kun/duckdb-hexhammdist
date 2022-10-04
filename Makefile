@@ -20,15 +20,20 @@ debug: pull
 	mkdir -p build/debug && \
 	cd build/debug && \
 	cmake -DCMAKE_BUILD_TYPE=Debug ${BUILD_FLAGS} ../../duckdb/CMakeLists.txt -DEXTERNAL_EXTENSION_DIRECTORIES=../../duckdb-hexhammdist -B. && \
-	cmake --build . --config Debug
+	make -j hexhammdist_extension_loadable_extension
 
 release: pull 
 	mkdir -p build/release && \
 	cd build/release && \
 	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo ${BUILD_FLAGS} ../../duckdb/CMakeLists.txt -DEXTERNAL_EXTENSION_DIRECTORIES=../../duckdb-hexhammdist -B. && \
-	cmake --build . --config Release
+	make -j hexhammdist_extension_loadable_extension
 
-test: release
+fulltree: pull release
+	cd build/release && \
+	make -j
+
+
+test: fulltree
 	./build/release/test/unittest --test-dir . "[hexhamm]"
 
 format:
