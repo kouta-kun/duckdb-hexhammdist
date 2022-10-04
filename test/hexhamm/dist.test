@@ -1,0 +1,11 @@
+statement ok
+LOAD 'build/release/extension/duckdb-hexhammdist/hexhammdist_extension.duckdb_extension';
+
+query I
+select hexhammdist(value_a, value_b) from read_csv_auto('example.csv', header=True)
+----
+9
+6
+11
+8
+8
