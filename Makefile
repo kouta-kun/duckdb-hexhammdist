@@ -11,7 +11,7 @@ BUILD_FLAGS=-DEXTENSION_STATIC_BUILD=1 -DBUILD_TPCH_EXTENSION=1 ${OSX_BUILD_UNIV
 
 pull:
 	git submodule init
-	git submodule update --recursive
+	git submodule update --recursive --remote
 
 clean:
 	rm -rf build
