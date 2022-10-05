@@ -12,7 +12,9 @@ make test
 build/release/test/unittest --test-dir . "[hexhamm]"
 ```
 
-Building the test task compiles the whole DuckDB tree, while make release/all/debug only compile as much as required for an extension.
+Building the test task compiles the whole DuckDB tree, while make release/all/debug only compile as much as required for an extension. Additionally, `make ext-only` builds the extension in shared library mode. This can generate issues when used with a distribution/official release, so it is not recommended.
+
+The `make perf-test` task compares performance of the scalar and vectorized versions, currently the vectorized version barely matches the average performance of the scalar version and ocasionally has slightly better worst-case performance. According to the DuckDB devs in the Discord, both scalar and vectorized functions are automatically parallelized by DuckDB so it's possible that they've both reached peak performance through it.
 
 ## Usage
 ```bash
