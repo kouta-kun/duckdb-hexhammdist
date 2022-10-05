@@ -9,3 +9,12 @@ select hexhammdist(value_a, value_b) from read_csv_auto('example.csv', header=Tr
 11
 8
 8
+
+query I
+select hexhammdist_vec(value_a, value_b) from read_csv_auto('example.csv', header=True)
+----
+9
+6
+11
+8
+8

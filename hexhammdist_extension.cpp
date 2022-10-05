@@ -1,4 +1,5 @@
 #define DUCKDB_EXTENSION_MAIN
+#include <iostream>
 #include "duckdb.hpp"
 #include "duckdb/common/exception.hpp"
 #include "duckdb/parser/parser_extension.hpp"
@@ -92,6 +93,57 @@ int64_t hammdist(string_t a, string_t b) {
   return res;
 }
 
+void hammdist_vectorized(DataChunk &args, ExpressionState &state, Vector &result) {
+  result.SetVectorType(VectorType::FLAT_VECTOR);
+
+  auto result_data = FlatVector::GetData<int64_t>(result);
+
+  auto ldata = FlatVector::GetData<string_t>(args.data[0]);
+  auto rdata = FlatVector::GetData<string_t>(args.data[1]);
+
+  ValidityMask val = FlatVector::Validity(args.data[0]);
+  val.Combine(FlatVector::Validity(args.data[1]), args.size());
+  FlatVector::SetValidity(result, val);
+  idx_t maxLen = 0;
+  size_t *lens = (size_t*)malloc(args.size() * sizeof(size_t));
+
+  for (idx_t i = 0; i < args.size(); i++) {
+    lens[i] = 0;
+    if(!val.RowIsValid(i)) continue;
+    auto &aString = ldata[i];
+    auto &bString = rdata[i];
+    if(aString.GetSize() != bString.GetSize()) {
+      free(lens);
+      throw OutOfRangeException("Strings must have same size!");
+    }
+    lens[i] = aString.GetSize();
+    maxLen = std::max(maxLen, aString.GetSize());
+  }
+  
+  uint8_t *tmp = (uint8_t*)calloc(args.size(), maxLen);
+
+  for (idx_t i = 0; i < args.size(); i++) {
+    auto aString = ldata[i].GetDataUnsafe();
+    auto bString = rdata[i].GetDataUnsafe();
+    auto len = lens[i];
+
+    for(idx_t c = 0; c < len; c++) {
+      tmp[i * maxLen + c] = bitssettab[unhextab[aString[c]] ^ unhextab[bString[c]]];
+    }
+  }
+  size_t sz = args.size();
+
+  memset(result_data, 0, sizeof(int64_t) * sz);
+
+  for (size_t i = 0; i < sz; i++) {
+    for(size_t c = 0; c < maxLen; c++)
+      result_data[i] += tmp[i * maxLen + c];
+  }
+
+  free(tmp);
+  free(lens);
+}
+
 //===--------------------------------------------------------------------===//
 // Extension load + setup
 //===--------------------------------------------------------------------===//
@@ -101,6 +153,7 @@ DUCKDB_EXTENSION_API void hexhammdist_extension_init(duckdb::DatabaseInstance &d
 	con.BeginTransaction();
 	con.CreateScalarFunction<int64_t, string_t, string_t>("hexhammdist", {LogicalType(LogicalTypeId::VARCHAR),LogicalType(LogicalTypeId::VARCHAR)},
 	                                             LogicalType(LogicalTypeId::BIGINT), &hammdist);
+	con.CreateVectorizedFunction<int64_t, string_t, string_t>("hexhammdist_vec", &hammdist_vectorized);
 	con.Commit();
 }
 

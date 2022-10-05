@@ -1,0 +1,2 @@
+load 'build/release/extension/duckdb-hexhammdist/hexhammdist_extension.duckdb_extension';
+select hexhammdist(value_a, value_b) from read_csv_auto('tests.csv',header=True);
