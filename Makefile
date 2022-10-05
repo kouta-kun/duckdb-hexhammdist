@@ -11,7 +11,7 @@ BUILD_FLAGS=-DEXTENSION_STATIC_BUILD=1 -DBUILD_TPCH_EXTENSION=1 ${OSX_BUILD_UNIV
 
 pull:
 	git submodule init
-	git submodule update --recursive --remote
+	git submodule update
 
 clean:
 	rm -rf build
@@ -19,13 +19,13 @@ clean:
 debug: pull
 	mkdir -p build/debug && \
 	cd build/debug && \
-	cmake -DCMAKE_BUILD_TYPE=Debug ${BUILD_FLAGS} ../../duckdb/CMakeLists.txt -DEXTERNAL_EXTENSION_DIRECTORIES=../../duckdb-hexhammdist -B. && \
+	cmake -DCMAKE_BUILD_TYPE=Debug ${BUILD_FLAGS} ../../duckdb/CMakeLists.txt -DEXTERNAL_EXTENSION_DIRECTORY=../../duckdb-hexhammdist -B. && \
 	make -j hexhammdist_extension_loadable_extension
 
 release: pull 
 	mkdir -p build/release && \
 	cd build/release && \
-	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo ${BUILD_FLAGS} ../../duckdb/CMakeLists.txt -DEXTERNAL_EXTENSION_DIRECTORIES=../../duckdb-hexhammdist -B. && \
+	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo ${BUILD_FLAGS} ../../duckdb/CMakeLists.txt -DEXTERNAL_EXTENSION_DIRECTORY=../../duckdb-hexhammdist -B. && \
 	make -j hexhammdist_extension_loadable_extension
 
 fulltree: pull release
