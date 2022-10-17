@@ -19,7 +19,7 @@ clean:
 debug: pull
 	mkdir -p build/debug && \
 	cd build/debug && \
-	cmake -DCMAKE_BUILD_TYPE=Debug ${BUILD_FLAGS} ../../duckdb/CMakeLists.txt -DEXTENSION_STATIC_BUILD=0 -DEXTERNAL_EXTENSION_DIRECTORY=../../duckdb-hexhammdist -B. && \
+	cmake -DCMAKE_BUILD_TYPE=Debug ${BUILD_FLAGS} ../../duckdb/CMakeLists.txt -DEXTENSION_STATIC_BUILD=1 -DEXTERNAL_EXTENSION_DIRECTORY=../../duckdb-hexhammdist -B. && \
 	make -j hexhammdist_extension_loadable_extension
 
 ext-only: pull
@@ -31,7 +31,7 @@ ext-only: pull
 release: pull 
 	mkdir -p build/release && \
 	cd build/release && \
-	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo ${BUILD_FLAGS} ../../duckdb/CMakeLists.txt -DEXTENSION_STATIC_BUILD=0 -DEXTERNAL_EXTENSION_DIRECTORY=../../duckdb-hexhammdist -B. && \
+	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo ${BUILD_FLAGS} ../../duckdb/CMakeLists.txt -DEXTENSION_STATIC_BUILD=1 -DEXTERNAL_EXTENSION_DIRECTORY=../../duckdb-hexhammdist -B. && \
 	make -j hexhammdist_extension_loadable_extension
 
 fulltree: pull release
