@@ -20,7 +20,7 @@ Currently building on Ubuntu 20.04 seems to generate a broken extension that doe
 
 ```bash
 docker build -t hexhamm-build .
-docker create -name hexhamm hexhamm-build
+docker create --name hexhamm hexhamm-build
 docker cp hexhamm:/duckdb-hexhammdist/build/release/extension/duckdb-hexhammdist/hexhammdist_extension.duckdb_extension .
 ```
 
